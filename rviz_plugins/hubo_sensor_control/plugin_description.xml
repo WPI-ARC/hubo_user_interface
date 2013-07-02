@@ -1,0 +1,16 @@
+<library path="${prefix}/lib/libhubo_sensor_control">
+  <class name="HuboSensorControlPanel"
+         type="DRC_Hubo_Interface::HuboSensorControlPanel"
+         base_class_type="rviz::Panel">
+    <description>
+      A panel to control the bandwidth of all the sensors on the hubo robot
+    </description>
+  </class>
+  <class name="HuboSensorControlWidget"
+         type="DRC_Hubo_Interface::HuboSensorControlWidget"
+         base_class_type="QTabWidget">
+    <description>
+      The widget which is laid on top of the HuboSensorControlPanel
+    </description>
+  </class>
+</library>
