@@ -1,9 +1,0 @@
-<library path="lib/libcomm_indicator">
-  <class name="DRC_Hubo_Interface/TeleopTwo"
-         type="DRC_Hubo_Interface::TeleopPanelTwo"
-         base_class_type="rviz::Panel">
-    <description>
-      A panel that shows communication status between the user and the robot.
-    </description>
-  </class>
-</library>

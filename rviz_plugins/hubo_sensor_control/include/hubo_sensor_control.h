@@ -11,8 +11,7 @@
  * Website: http://web.cs.wpi.edu/~hive/                                     *
  *                                                                           *
  *                                                                           *
- * Contributors:                                                             *
- * Michael X. Grey <mxgrey@gatech.edu>                                       *
+ * Contributors:                                                             *                                   *
  *                                                                           *
  * Thanks:                                                                   *
  *                                                                           *
