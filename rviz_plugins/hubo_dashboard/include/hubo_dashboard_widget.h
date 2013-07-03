@@ -45,6 +45,9 @@
 #ifndef HUBO_DASHBOARD_WIDGET_H_
 #define HUBO_DASHBOARD_WIDGET_H_
 
+#include <ros/ros.h>
+#include <std_msgs/Empty.h>
+
 #include <QWidget>
 #include <QThread>
 #include <QLabel>
@@ -99,20 +102,31 @@ public:
 
 protected:
 
+  //A ROS node to do the ROS work
+  ros::NodeHandle nh_;
+
   //Methods and Properties for the Joint Indicator
   void setupJointIndicator(void);
 
   QLabel* joint_indicator_;
   QPixmap* body_;
 
+  //======================================================================
+
   //Methods and Properties for the Comm Indicator
   void setupCommIndicator(void);
+  void comm_indicator_update(std_msgs::Empty input);
   void refreshCommIndicator(void);
 
   QLabel* comm_indicator_;
   std::vector<QPixmap*> meter_;
   int meter_id_;
+  bool update_received_;
 
+  //Subscriber for the comm indicator
+  ros::Subscriber comm_indicator_update_;
+
+  //======================================================================
 
   //Methods and Properties for the Battery Indicator
   void setupBatteryIndicator(void);

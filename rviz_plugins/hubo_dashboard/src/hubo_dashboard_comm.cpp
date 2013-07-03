@@ -57,6 +57,8 @@ void HuboDashboardWidget::setupCommIndicator(void){
 
     meter_id_ = 0;
 
+    update_received_ = false;
+
 //    meter_.push_back(new QPixmap("../resources/Meter_1.png"));
 //    meter_.push_back(new QPixmap("../resources/Meter_2.png"));
 //    meter_.push_back(new QPixmap("../resources/Meter_3.png"));
@@ -70,18 +72,31 @@ void HuboDashboardWidget::setupCommIndicator(void){
 //    meter_.push_back(new QPixmap("../resources/Meter_11.png"));
 //    meter_.push_back(new QPixmap("../resources/Meter_12.png"));
 
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_1.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_2.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_3.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_4.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_5.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_6.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_7.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_8.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_9.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_10.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_11.png"));
-    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_12.png"));
+      meter_.push_back(new QPixmap("resources/Meter_1.png"));
+      meter_.push_back(new QPixmap("resources/Meter_2.png"));
+      meter_.push_back(new QPixmap("resources/Meter_3.png"));
+      meter_.push_back(new QPixmap("resources/Meter_4.png"));
+      meter_.push_back(new QPixmap("resources/Meter_5.png"));
+      meter_.push_back(new QPixmap("resources/Meter_6.png"));
+      meter_.push_back(new QPixmap("resources/Meter_7.png"));
+      meter_.push_back(new QPixmap("resources/Meter_8.png"));
+      meter_.push_back(new QPixmap("resources/Meter_9.png"));
+      meter_.push_back(new QPixmap("resources/Meter_10.png"));
+      meter_.push_back(new QPixmap("resources/Meter_11.png"));
+      meter_.push_back(new QPixmap("resources/Meter_12.png"));
+
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_1.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_2.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_3.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_4.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_5.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_6.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_7.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_8.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_9.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_10.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_11.png"));
+//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_12.png"));
 
     comm_indicator_->setPixmap(*meter_[meter_id_]);
 
@@ -92,12 +107,27 @@ void HuboDashboardWidget::setupCommIndicator(void){
 
 }
 
+void HuboDashboardWidget::comm_indicator_update(std_msgs::Empty input){
+
+    std::cout << "Comm Indicator Update Received" << std::endl;
+
+    update_received_ = true;
+
+}
+
 void HuboDashboardWidget::refreshCommIndicator(void){
 
-    std::cout << "I am feeling REFRESHED!" << std::endl;
+//    meter_id_++;
+//    if (meter_id_ > 11) meter_id_ = 0;
 
-    meter_id_++;
-    if (meter_id_ > 11) meter_id_ = 0;
+    if (update_received_ == true) {
+        meter_id_ = 0;
+        update_received_ = false;
+    } else {meter_id_++;}
+
+    if (meter_id_ < 0) meter_id_ = 0;
+    if (meter_id_ > 11) meter_id_ = 11;
+
 
     comm_indicator_->setPixmap(*meter_[meter_id_]);
 

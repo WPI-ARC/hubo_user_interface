@@ -35,6 +35,10 @@ namespace DRC_Hubo_Interface
 
 HuboDashboardWidget::HuboDashboardWidget( QWidget* parent ) : QWidget( parent ) {
 
+    std::string topic = "/hubo_dashboard/comm_indicator/update";
+
+    comm_indicator_update_ = nh_.subscribe(topic.c_str(), 1, &HuboDashboardWidget::comm_indicator_update, this);
+
     //Setup the Joint Indicator
     setupJointIndicator();
 
