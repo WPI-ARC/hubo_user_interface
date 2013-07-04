@@ -137,6 +137,12 @@ void HuboSensorControlWidget::initializeRobotVisionFeedTab() {
     masterCTLayout->addWidget(cameraFeedBox, 0, Qt::AlignTop);
     masterCTLayout->addWidget(planarLaserBox, 0, Qt::AlignTop);
 
+    //Make a new apply button
+    vision_apply_button_ = new QPushButton;
+    vision_apply_button_->setText("Apply");
+
+    masterCTLayout->addWidget(vision_apply_button_, 0, Qt::AlignCenter);
+
     //======================================================
     //=====           Build the Overall Tab            =====
     //======================================================

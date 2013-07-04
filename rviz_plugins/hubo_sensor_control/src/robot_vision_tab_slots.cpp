@@ -48,4 +48,8 @@
 //Namespace for the project/plugin
 namespace DRC_Hubo_Interface {
 
+void HuboSensorControlWidget::handleVisionApply(void){
+
+}
+
 }

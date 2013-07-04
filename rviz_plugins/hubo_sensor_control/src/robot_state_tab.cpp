@@ -51,6 +51,12 @@ namespace DRC_Hubo_Interface {
 void HuboSensorControlWidget::initializeRobotStateFeedTab()
 {
 
+    //Setup the service clients here
+    state_joints_client_ = nh_.serviceClient<std_srvs::Empty>("joint_state_topic/rate");
+    state_forces_client_ = nh_.serviceClient<std_srvs::Empty>("force_sensor_topic/rate");
+    state_accel_client_ = nh_.serviceClient<std_srvs::Empty>("accel_gyro_topic/rate");
+    state_touch_client_ = nh_.serviceClient<std_srvs::Empty>("touch_sensors_topic/rate");
+
     //======================================================
     //===== Joint Angles Box                           =====
     //======================================================  
@@ -74,7 +80,7 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     jointAnglesSlider->setOrientation(Qt::Horizontal);
     jointAnglesSlider->setGeometry(QRect(0, 0, 257, 29));
     jointAnglesSlider->setMaximum(7);
-    jointAnglesSlider->setSliderPosition(2);
+    jointAnglesSlider->setSliderPosition(0);
     jointAnglesSlider->setTickPosition(QSlider::TicksAbove);
     jointAnglesSlider->setMinimumSize(QSize(257, 29));
     jointAnglesSlider->setMaximumSize(QSize(257, 29));
@@ -111,7 +117,7 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     forceSensorSlider->setOrientation(Qt::Horizontal);
     forceSensorSlider->setGeometry(QRect(0, 0, 257, 29));
     forceSensorSlider->setMaximum(7);
-    forceSensorSlider->setSliderPosition(2);
+    forceSensorSlider->setSliderPosition(0);
     forceSensorSlider->setTickPosition(QSlider::TicksAbove);
     forceSensorSlider->setMinimumSize(QSize(257, 29));
     forceSensorSlider->setMaximumSize(QSize(257, 29));
@@ -128,7 +134,10 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     //======================================================
     //===== Acceleromter / Gyro Box                    =====
     //======================================================  
-
+    ros::ServiceClient state_joints_client_;
+    ros::ServiceClient state_forces_client_;
+    ros::ServiceClient state_accel_client_;
+    ros::ServiceClient state_touch_client_;
     //Create the layout for the specific Camera Slider Item
     QVBoxLayout* accelGryoLayout = new QVBoxLayout;
 
@@ -148,7 +157,7 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     accelGryoSlider->setOrientation(Qt::Horizontal);
     accelGryoSlider->setGeometry(QRect(0, 0, 257, 29));
     accelGryoSlider->setMaximum(7);
-    accelGryoSlider->setSliderPosition(2);
+    accelGryoSlider->setSliderPosition(0);
     accelGryoSlider->setTickPosition(QSlider::TicksAbove);
     accelGryoSlider->setMinimumSize(QSize(257, 29));
     accelGryoSlider->setMaximumSize(QSize(257, 29));
@@ -185,7 +194,7 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     touchSensorSlider->setOrientation(Qt::Horizontal);
     touchSensorSlider->setGeometry(QRect(0, 0, 257, 29));
     touchSensorSlider->setMaximum(7);
-    touchSensorSlider->setSliderPosition(2);
+    touchSensorSlider->setSliderPosition(0);
     touchSensorSlider->setTickPosition(QSlider::TicksAbove);
     touchSensorSlider->setMinimumSize(QSize(257, 29));
     touchSensorSlider->setMaximumSize(QSize(257, 29));
@@ -220,6 +229,14 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     masterCTLayout->addWidget(forceSensorBox);
     masterCTLayout->addWidget(accelGryoBox);
     masterCTLayout->addWidget(touchSensorBox);
+
+    //Make a new apply button
+    state_apply_button_ = new QPushButton;
+    state_apply_button_->setText("Apply");
+    masterCTLayout->addWidget(state_apply_button_, 0, Qt::AlignCenter);
+
+    connect(state_apply_button_, SIGNAL(released(void)),
+            this,              SLOT(handleStateApply(void)));
 
     robotStateFeedTab = new QWidget;
     robotStateFeedTab->setLayout(masterCTLayout);

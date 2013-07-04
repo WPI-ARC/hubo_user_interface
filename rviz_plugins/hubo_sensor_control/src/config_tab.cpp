@@ -51,63 +51,7 @@
 namespace DRC_Hubo_Interface {
 
 void HuboSensorControlWidget::initializeConfigTab(void){
-    //======================================================
-    //=====           Build the Overall Tab            =====
-    //======================================================
 
-
-//    QVBoxLayout* masterCTLayout = new QVBoxLayout;
-//    masterCTLayout->addWidget(myLabel);
-
-//    myLabel->setGeometry(QRect(0, 0, 30, 50));
-
-
-    configTab = new QWidget;
-
-    myLabel = new QLabel(configTab);
-
-//    QPixmap* mypix = new QPixmap("../resources/Meter_1.png");
-
-    meter.push_back(new QPixmap("../resources/Meter_1.png"));
-    meter.push_back(new QPixmap("../resources/Meter_2.png"));
-    meter.push_back(new QPixmap("../resources/Meter_3.png"));
-    meter.push_back(new QPixmap("../resources/Meter_4.png"));
-    meter.push_back(new QPixmap("../resources/Meter_5.png"));
-    meter.push_back(new QPixmap("../resources/Meter_6.png"));
-    meter.push_back(new QPixmap("../resources/Meter_7.png"));
-    meter.push_back(new QPixmap("../resources/Meter_8.png"));
-    meter.push_back(new QPixmap("../resources/Meter_9.png"));
-    meter.push_back(new QPixmap("../resources/Meter_10.png"));
-    meter.push_back(new QPixmap("../resources/Meter_11.png"));
-    meter.push_back(new QPixmap("../resources/Meter_12.png"));
-
-
-
-    myLabel->setPixmap(*meter[0]);
-    myLabel->setGeometry(QRect(0, 0, 200, 200));
-    myLabel->show();
-
-}
-
-void HuboSensorControlWidget::DrawConfigTab(int loc) {
-
-    myLabel->setPixmap(*meter[loc]);
-
-}
-
-void HuboSensorControlWidget::RefreshComms(void){
-
-    static int count = 0;
-
-    int num = std::rand() % 2;
-
-    if (num == 0) count++;
-    if (num == 1) count--;
-
-    if (count < 0) count = 0;
-    if (count > 11) count = 11;
-
-    DrawConfigTab(count);
 
 }
 

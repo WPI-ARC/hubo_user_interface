@@ -53,34 +53,50 @@ namespace DRC_Hubo_Interface {
 // Robot State Slots
 //======================================
 void HuboSensorControlWidget::handleJointAngles(int v){
-   
-    jointAnglesHz = lookupHzOne2OneHundred(v);
-
-   std::cerr << "(Fake Service Call) Joint Angles Rate Switched to " << jointAnglesHz << "(Hz)" << std::endl; 
-
+   jointAnglesHz = lookupHzOne2OneHundred(v);
+   std::cerr << "(Debug) Joint Angles Rate Switched to " << jointAnglesHz << "(Hz)" << std::endl;
 }
 
 void HuboSensorControlWidget::handleForceSensor(int v){
-    
-    forceSensorHz = lookupHzOne2OneHundred(v);
-
-   std::cerr << "(Fake Service Call) Force Sensors Rate Switched to " << forceSensorHz << "(Hz)" << std::endl; 
-
+   forceSensorHz = lookupHzOne2OneHundred(v);
+   std::cerr << "(Debug) Force Sensors Rate Switched to " << forceSensorHz << "(Hz)" << std::endl;
 }
 
 void HuboSensorControlWidget::handleAccelGryo(int v){
- 
-    accelGryoHz = lookupHzOne2OneHundred(v);
-   
-   std::cerr << "(Fake Service Call) Accel and Gryo Rate Switched to " << accelGryoHz << "(Hz)" << std::endl; 
-
+   accelGryoHz = lookupHzOne2OneHundred(v);
+   std::cerr << "(Debug) Accel and Gryo Rate Switched to " << accelGryoHz << "(Hz)" << std::endl;
 }
 
 void HuboSensorControlWidget::handleTouchSensor(int v){
+   touchSensorHz = lookupHzOne2OneHundred(v);
+   std::cerr << "(Debug) Touch Sensors Rate Switched to " << touchSensorHz << "(Hz)" << std::endl;
+}
 
-    touchSensorHz = lookupHzOne2OneHundred(v);
-    
-   std::cerr << "(Fake Service Call) Touch Sensors Rate Switched to " << touchSensorHz << "(Hz)" << std::endl;  
+void HuboSensorControlWidget::handleStateApply(void){
+
+    std_srvs::Empty joint_srv;
+    state_joints_client_.call(joint_srv);
+
+    std_srvs::Empty forces_srv;
+    state_forces_client_.call(forces_srv);
+
+    std_srvs::Empty accel_srv;
+    state_accel_client_.call(accel_srv);
+
+    std_srvs::Empty touch_srv;
+    state_touch_client_.call(touch_srv);
+
+    state_joints_client_ = nh_.serviceClient<std_srvs::Empty>("joint_state_topic/rate");
+    state_forces_client_ = nh_.serviceClient<std_srvs::Empty>("force_sensor_topic/rate");
+    state_accel_client_ = nh_.serviceClient<std_srvs::Empty>("accel_gyro_topic/rate");
+    state_touch_client_ = nh_.serviceClient<std_srvs::Empty>("touch_sensors_topic/rate");
+
+    std::cout << "\nApply Pressed on Robot State Tab!" << std::endl;
+    std::cout << "/joint_state_topic/rate called with " << jointAnglesHz << " Hz" << std::endl;
+    std::cout << "/force_sensor_topic/rate called with " << forceSensorHz << " Hz" << std::endl;
+    std::cout << "/accel_gryo_topic/rate called with " << accelGryoHz << " Hz" << std::endl;
+    std::cout << "/touch_sensors_topic/rate called with " << touchSensorHz << " Hz" << std::endl;
+    std::cout << "All services have returned, continuing! \n" << std::endl;
 
 }
 

@@ -109,10 +109,10 @@ HuboSensorControlWidget::HuboSensorControlWidget(QWidget *parent) : QTabWidget(p
     addTab(sensorRequestTab, "Data Req.");
 
     //The Second tab controls data about the robots' vision
-    initializeConfigTab();
+//    initializeConfigTab();
 //    configTab = new QWidget;
-    std::cerr << "Configuration Tab Loaded" << std::endl;
-    addTab(configTab, "Config");
+//    std::cerr << "Configuration Tab Loaded" << std::endl;
+//    addTab(configTab, "Config");
 
     refreshManager = new HuboSensorControlRefreshManager;
     refreshManager->parentWidget = this;
@@ -139,7 +139,7 @@ void HuboSensorControlRefreshManager::run()
 {
     alive = true;
     waitTime = 250;
-    connect(this, SIGNAL(signalRefresh()), parentWidget, SLOT(RefreshComms()));
+//    connect(this, SIGNAL(signalRefresh()), parentWidget, SLOT(RefreshComms()));
     while(alive)
     {
         emit signalRefresh();

@@ -48,6 +48,7 @@
 //Ros Specific Includes
 #include <ros/ros.h>
 #include <rviz/panel.h>
+#include <std_srvs/Empty.h>
 
 //C++ Includes
 #include <vector>
@@ -164,19 +165,18 @@ protected: //Variables go here, ints and such
 //To perform the various actions that are needed
 protected Q_SLOTS:
 
-    //General Q_SLOTS
-    void RefreshComms(void);
-
     //Handles for the robot state
     void handleJointAngles(int v);
     void handleForceSensor(int v);
     void handleAccelGryo(int v);
     void handleTouchSensor(int v);
+    void handleStateApply(void);
 
     //Handles for the robot vision
     void handleCameraFeed(int v);
     void handleGrayscale(int v);
     void handlePlanar(int v);
+    void handleVisionApply(void);
 
     //Handles for the request tab
     void handleNarrowPress(bool toggle);
@@ -186,6 +186,13 @@ protected Q_SLOTS:
     void handleGetCloud();
 
 private:
+
+    //Ros Node
+    ros::NodeHandle nh_;
+    ros::ServiceClient state_joints_client_;
+    ros::ServiceClient state_forces_client_;
+    ros::ServiceClient state_accel_client_;
+    ros::ServiceClient state_touch_client_;
 
     //General Use
     double lookupHzOne2OneHundred(int loc);
@@ -197,6 +204,7 @@ private:
     QSlider* forceSensorSlider;
     QSlider* accelGryoSlider;
     QSlider* touchSensorSlider;
+    QPushButton* state_apply_button_;
 
     //===== Robot Vision Tab =====
     void initializeRobotVisionFeedTab();
@@ -204,6 +212,7 @@ private:
     QSlider* cameraFeedSlider;
     QCheckBox* cameraFeedGrayscale;
     QSlider* planarLaserSlider;
+    QPushButton* vision_apply_button_;
     
 
     //===== Sensor Request Tab =====
