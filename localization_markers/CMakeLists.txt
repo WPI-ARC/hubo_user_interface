@@ -78,9 +78,9 @@ add_executable(localization_marker_server src/localization_marker_server.cpp)
 # add_dependencies(localization_markers_node localization_markers_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(localization_markers_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(localization_marker_server
+   ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
