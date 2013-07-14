@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "localization_markers/set_localization_marker.h"
+#include "localization_marker_msgs/set_localization_marker.h"
 
 // PCL specific includes
 #include <iostream>
@@ -57,7 +57,7 @@ void makeValve(geometry_msgs::Pose newPose);
 void generateInputCloud(void);
 void generateTargetCloud(void);
 void runICP(void);
-void set_cb(localization_markers::set_localization_marker input);
+void set_cb(localization_marker_msgs::set_localization_marker input);
 
 interactive_markers::MenuHandler menu_handler;
 interactive_markers::InteractiveMarkerServer * server = NULL;
@@ -171,13 +171,13 @@ void runICP(void){
     currentPose.position.z = finalPosition(2, 3);
 
     //Turn the rotation matrix into a Quaternion
-    tfScalar yaw, pitch, roll;
-    myTfMatrix.getEulerYPR(yaw, pitch, roll);
+    tf::Quaternion newQuaternion;
+    myTfMatrix.getRotation(newQuaternion);
 
-    //Multiply the Quaternions to get my new Orientation
+    //Compose the Quaternions to get my new Orientation
     tf::Quaternion currentQuaternion(currentPose.orientation.x, currentPose.orientation.y, currentPose.orientation.z, currentPose.orientation.w);
-    tf::Quaternion myTfQuaternion(pitch, roll, yaw);
-    currentQuaternion*=myTfQuaternion;
+
+    currentQuaternion = currentQuaternion * newQuaternion;
 
     tf::quaternionTFToMsg(currentQuaternion, currentPose.orientation);
 
@@ -634,19 +634,19 @@ void pc_target_cb(sensor_msgs::PointCloud2::Ptr input){
 
 }
 
-void set_cb(localization_markers::set_localization_marker input){
+void set_cb(localization_marker_msgs::set_localization_marker input){
 
     ros::param::set("/localization_marker_server/marker/name", input.name);
     ros::param::set("/localization_marker_server/marker/description", input.description);
     ros::param::set("/localization_marker_server/marker/type", input.marker_type);
     ros::param::set("/localization_marker_server/marker/mesh_resource", input.mesh_resource);
-    ros::param::set("/localization_marker_server/marker/defaultPose/position/x", input.defaultPose.position.x);
-    ros::param::set("/localization_marker_server/marker/defaultPose/position/y", input.defaultPose.position.y);
-    ros::param::set("/localization_marker_server/marker/defaultPose/position/z", input.defaultPose.position.z);
-    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/w", input.defaultPose.orientation.w);
-    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/x", input.defaultPose.orientation.x);
-    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/y", input.defaultPose.orientation.y);
-    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/z", input.defaultPose.orientation.z);
+    ros::param::set("/localization_marker_server/marker/defaultPose/position/x", input.defaultPose.pose.position.x);
+    ros::param::set("/localization_marker_server/marker/defaultPose/position/y", input.defaultPose.pose.position.y);
+    ros::param::set("/localization_marker_server/marker/defaultPose/position/z", input.defaultPose.pose.position.z);
+    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/w", input.defaultPose.pose.orientation.w);
+    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/x", input.defaultPose.pose.orientation.x);
+    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/y", input.defaultPose.pose.orientation.y);
+    ros::param::set("/localization_marker_server/marker/defaultPose/orientation/z", input.defaultPose.pose.orientation.z);
     ros::param::set("/localization_marker_server/marker/radius", input.radius);
     ros::param::set("/localization_marker_server/marker/width", input.width);
     ros::param::set("/localization_marker_server/marker/height", input.height);
@@ -659,29 +659,29 @@ void set_cb(localization_markers::set_localization_marker input){
     ros::param::set("/localization_marker_server/bounding_box/show", input.show_bounding_volume);
     ros::param::set("/localization_marker_server/bounding_box/type", input.bounding_volume_type);
     ros::param::set("/localization_marker_server/bounding_box/radius", input.sphere_radius);
-    ros::param::set("/localization_marker_server/bounding_box/x", input.rectangle_scale.x);
-    ros::param::set("/localization_marker_server/bounding_box/y", input.rectangle_scale.y);
-    ros::param::set("/localization_marker_server/bounding_box/z", input.rectangle_scale.z);
+    ros::param::set("/localization_marker_server/bounding_box/x", input.bounding_volume_dimensions.x);
+    ros::param::set("/localization_marker_server/bounding_box/y", input.bounding_volume_dimensions.y);
+    ros::param::set("/localization_marker_server/bounding_box/z", input.bounding_volume_dimensions.z);
     ros::param::set("/localization_marker_server/bounding_box/color/r", input.bounding_volume_color.r);
     ros::param::set("/localization_marker_server/bounding_box/color/g", input.bounding_volume_color.g);
     ros::param::set("/localization_marker_server/bounding_box/color/b", input.bounding_volume_color.b);
     ros::param::set("/localization_marker_server/bounding_box/color/a", input.bounding_volume_color.a);
 
-    ros::param::set("/localization_marker_server/control/translation/x", input.translate_X);
-    ros::param::set("/localization_marker_server/control/translation/y", input.translate_Y);
-    ros::param::set("/localization_marker_server/control/translation/z", input.translate_Z);
-    ros::param::set("/localization_marker_server/control/rotation/x", input.rotate_X);
-    ros::param::set("/localization_marker_server/control/rotation/y", input.rotate_Y);
-    ros::param::set("/localization_marker_server/control/rotation/z", input.rotate_Z);
-    ros::param::set("/localization_marker_server/control/menu", input.menu_control);
+    ros::param::set("/localization_marker_server/control/translation/x", input.enable_translate_X);
+    ros::param::set("/localization_marker_server/control/translation/y", input.enable_translate_Y);
+    ros::param::set("/localization_marker_server/control/translation/z", input.enable_translate_Z);
+    ros::param::set("/localization_marker_server/control/rotation/x", input.enable_rotate_X);
+    ros::param::set("/localization_marker_server/control/rotation/y", input.enable_rotate_Y);
+    ros::param::set("/localization_marker_server/control/rotation/z", input.enable_rotate_Z);
+    ros::param::set("/localization_marker_server/control/menu", input.enable_menu_control);
 
     ros::param::set("/localization_marker_server/target_cloud/topic", input.target_cloud_topic);
-    ros::param::set("/localization_marker_server/target_cloud/voxel", input.target_cloud_voxel);
+    ros::param::set("/localization_marker_server/target_cloud/voxel", input.voxelize_target_cloud);
     ros::param::set("/localization_marker_server/input_cloud/resource", input.input_cloud_resource);
     ros::param::set("/localization_marker_server/input_cloud/discretization", input.input_cloud_discretization);
 
-    ros::param::set("/localization_marker_server/icp/maxCoorespondanceDistance", input.icp_coor_distance);
-    ros::param::set("/localization_marker_server/icp/maxInterations", input.icp_iterations);
+    ros::param::set("/localization_marker_server/icp/maxCoorespondanceDistance", input.max_icp_coorespondence_distance);
+    ros::param::set("/localization_marker_server/icp/maxInterations", input.max_icp_iterations);
 
     ros::param::set("/localization_marker_server/debug/input_cloud/pre_ICP/show", input.pre_ICP_show);
     ros::param::set("/localization_marker_server/debug/input_cloud/pre_ICP/topic", input.pre_ICP_topic);
