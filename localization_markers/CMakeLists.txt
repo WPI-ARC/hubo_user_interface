@@ -51,8 +51,8 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
-   CATKIN_DEPENDS roscpp rospy tf interactive_markers pcl pcl_ros geometry_msgs sensor_msgs std_msgs message_runtime
+#  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp rospy tf interactive_markers pcl pcl_ros geometry_msgs sensor_msgs std_msgs message_runtime
 )
 
 ###########
