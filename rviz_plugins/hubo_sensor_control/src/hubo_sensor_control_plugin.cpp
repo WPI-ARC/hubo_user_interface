@@ -104,9 +104,9 @@ HuboSensorControlWidget::HuboSensorControlWidget(QWidget *parent) : QTabWidget(p
     addTab(robotVisionFeedTab, "Hubo Vision");
 
     //The Second tab controls data about the robots' vision
-    initializeSensorRequestTab();
-    std::cerr << "Sensor Request Tab Loaded" << std::endl;
-    addTab(sensorRequestTab, "Data Req.");
+//    initializeSensorRequestTab();
+//    std::cerr << "Sensor Request Tab Loaded" << std::endl;
+//    addTab(sensorRequestTab, "Data Req.");
 
     //The Second tab controls data about the robots' vision
 //    initializeConfigTab();
@@ -129,6 +129,19 @@ double HuboSensorControlWidget::lookupHzOne2OneHundred(int loc){
     else if (loc == 4) return 25;
     else if (loc == 5) return 50;
     else if (loc == 6) return 100;
+    else if (loc == 7) return 1000;
+
+}
+
+double HuboSensorControlWidget::lookupHzPointOne2Ten(int loc){
+
+    if (loc == 0) return 0;
+    else if (loc == 1) return .1;
+    else if (loc == 2) return .3;
+    else if (loc == 3) return .5;
+    else if (loc == 4) return 1;
+    else if (loc == 5) return 5;
+    else if (loc == 6) return 10;
     else if (loc == 7) return 1000;
 
 }

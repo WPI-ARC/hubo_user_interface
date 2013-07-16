@@ -73,7 +73,7 @@ void HuboSensorControlWidget::initializeRobotVisionFeedTab() {
     cameraFeedSlider->setOrientation(Qt::Horizontal);
     cameraFeedSlider->setGeometry(QRect(0, 0, 257, 29));
     cameraFeedSlider->setMaximum(7);
-    cameraFeedSlider->setSliderPosition(3);
+    cameraFeedSlider->setSliderPosition(0);
     cameraFeedSlider->setTickPosition(QSlider::TicksAbove);
     cameraFeedSlider->setMinimumSize(QSize(257, 29));
     cameraFeedSlider->setMaximumSize(QSize(257, 29));
@@ -107,7 +107,7 @@ void HuboSensorControlWidget::initializeRobotVisionFeedTab() {
     planerLaserSliderTicks->setSizePolicy
         (QSizePolicy::Maximum, QSizePolicy::Maximum);
     planerLaserSliderTicks->setText
-        ("XX      1        5      10      25     50    100    oo (Hz)");
+            ("XX      .1      .3       .5       1        5       10     oo (Hz)");
 
     //Add the Label to the planarLaserLayout
     planarLaserLayout->addWidget(planerLaserSliderTicks, 0, Qt::AlignLeft);
@@ -118,7 +118,7 @@ void HuboSensorControlWidget::initializeRobotVisionFeedTab() {
     planarLaserSlider->setOrientation(Qt::Horizontal);
     planarLaserSlider->setGeometry(QRect(0, 0, 257, 29));
     planarLaserSlider->setMaximum(7);
-    planarLaserSlider->setSliderPosition(2);
+    planarLaserSlider->setSliderPosition(0);
     planarLaserSlider->setTickPosition(QSlider::TicksAbove);
     planarLaserSlider->setMinimumSize(QSize(257, 29));
     planarLaserSlider->setMaximumSize(QSize(257, 29));
@@ -146,6 +146,16 @@ void HuboSensorControlWidget::initializeRobotVisionFeedTab() {
     //======================================================
     //=====           Build the Overall Tab            =====
     //======================================================
+
+    connect(cameraFeedSlider, SIGNAL(valueChanged(int)),
+            this,              SLOT(handleCameraFeed(int)));
+
+    connect(planarLaserSlider, SIGNAL(valueChanged(int)),
+            this,              SLOT(handlePlanar(int)));
+
+    connect(vision_apply_button_, SIGNAL(released(void)),
+            this,              SLOT(handleVisionApply(void)));
+
 
     robotVisionFeedTab = new QWidget;
     robotVisionFeedTab->setLayout(masterCTLayout);

@@ -48,7 +48,34 @@
 //Namespace for the project/plugin
 namespace DRC_Hubo_Interface {
 
+//======================================
+// Robot State Slots
+//======================================
+void HuboSensorControlWidget::handleCameraFeed(int v){
+   cameraFeedHz = lookupHzPointOne2Ten(v);
+   std::cerr << "(Debug) Camera Rate Switched to " << cameraFeedHz << " (Hz)" << std::endl;
+}
+
+void HuboSensorControlWidget::handlePlanar(int v){
+   planarHz = lookupHzPointOne2Ten(v);
+   std::cerr << "(Debug) Planar Rate Switched to " << planarHz << " (Hz)" << std::endl;
+}
+
 void HuboSensorControlWidget::handleVisionApply(void){
+
+    std::cout << "\n(Debug) Apply Pressed on Robot Vision Tab!" << std::endl;
+
+    std_srvs::Empty camera_srv;
+    std::cout << "(Debug) Calling /camera_topic/rate called with " << cameraFeedHz << " (Hz) ... ";
+    vision_camera_client_.call(camera_srv);
+    std::cout << "Returned" << std::endl;
+
+    std_srvs::Empty planar_srv;
+    std::cout << "(Debug) Calling /planar_topic/rate called with " << planarHz << " (Hz) ... ";
+    vision_planar_client_.call(planar_srv);
+    std::cout << "Returned" << std::endl;
+
+    std::cout << "All services have returned, continuing! \n" << std::endl;
 
 }
 

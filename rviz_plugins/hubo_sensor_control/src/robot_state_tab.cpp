@@ -134,10 +134,6 @@ void HuboSensorControlWidget::initializeRobotStateFeedTab()
     //======================================================
     //===== Acceleromter / Gyro Box                    =====
     //======================================================  
-    ros::ServiceClient state_joints_client_;
-    ros::ServiceClient state_forces_client_;
-    ros::ServiceClient state_accel_client_;
-    ros::ServiceClient state_touch_client_;
     //Create the layout for the specific Camera Slider Item
     QVBoxLayout* accelGryoLayout = new QVBoxLayout;
 

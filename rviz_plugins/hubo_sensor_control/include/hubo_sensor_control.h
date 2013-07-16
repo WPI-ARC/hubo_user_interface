@@ -194,8 +194,12 @@ private:
     ros::ServiceClient state_accel_client_;
     ros::ServiceClient state_touch_client_;
 
+    ros::ServiceClient vision_camera_client_;
+    ros::ServiceClient vision_planar_client_;
+
     //General Use
     double lookupHzOne2OneHundred(int loc);
+    double lookupHzPointOne2Ten(int loc);
 
     //===== Robot State Tab =====
     void initializeRobotStateFeedTab();
