@@ -45,13 +45,15 @@
 #include "hubo_dashboard_widget.h"
 
 #include <iostream>
+#include <QImage>
+#include <resource_retriever/retriever.h>
+#include <stdlib.h>
+#include <sstream>
 
 namespace DRC_Hubo_Interface
 {
 
 void HuboDashboardWidget::setupCommIndicator(void){
-
-    std::cout << "Comm Indicator Setup Started" << std::endl;
 
     comm_indicator_ = new QLabel(this);
 
@@ -59,51 +61,38 @@ void HuboDashboardWidget::setupCommIndicator(void){
 
     update_received_ = false;
 
-//    meter_.push_back(new QPixmap("../resources/Meter_1.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_2.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_3.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_4.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_5.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_6.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_7.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_8.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_9.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_10.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_11.png"));
-//    meter_.push_back(new QPixmap("../resources/Meter_12.png"));
+    r_ = new resource_retriever::Retriever;
+    mem_r_ = new resource_retriever::MemoryResource;
+    tempImage_ = new QImage();
+    std::string baseFilepath = "package://hubo_dashboard/resources/Meter_";
+    int last_meter = 12;
 
-      meter_.push_back(new QPixmap("resources/Meter_1.png"));
-      meter_.push_back(new QPixmap("resources/Meter_2.png"));
-      meter_.push_back(new QPixmap("resources/Meter_3.png"));
-      meter_.push_back(new QPixmap("resources/Meter_4.png"));
-      meter_.push_back(new QPixmap("resources/Meter_5.png"));
-      meter_.push_back(new QPixmap("resources/Meter_6.png"));
-      meter_.push_back(new QPixmap("resources/Meter_7.png"));
-      meter_.push_back(new QPixmap("resources/Meter_8.png"));
-      meter_.push_back(new QPixmap("resources/Meter_9.png"));
-      meter_.push_back(new QPixmap("resources/Meter_10.png"));
-      meter_.push_back(new QPixmap("resources/Meter_11.png"));
-      meter_.push_back(new QPixmap("resources/Meter_12.png"));
+    for (int image_num = 1; image_num <= last_meter; image_num++) {
 
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_1.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_2.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_3.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_4.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_5.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_6.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_7.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_8.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_9.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_10.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_11.png"));
-//    meter_.push_back(new QPixmap("rviz_plugins/hubo_dashboard/resources/Meter_12.png"));
+        std::ostringstream convert;
 
+        //Create the string needed to read the file from memory
+        convert << image_num;
+        std::string meterNumber = convert.str() + ".png";
+        std::string filepath = baseFilepath.c_str() + meterNumber;
+
+        //Attempt to access the file and print an error if it cannot be done
+        try { *mem_r_ = r_->get(filepath); }
+        catch (resource_retriever::Exception& e)
+            { ROS_ERROR("Failed to retrieve file: %s", e.what()); }
+
+        //Save the loaded image into an array of Pixmaps for display
+        tempImage_->loadFromData(mem_r_->data.get(), mem_r_->size);
+        QPixmap* tempMap = new QPixmap();
+        tempMap->convertFromImage(*tempImage_);
+        meter_.push_back(tempMap);
+
+    }
+
+    //Set the image on the screen to be the first image and set it's size
     comm_indicator_->setPixmap(*meter_[meter_id_]);
-
     comm_indicator_->setGeometry(QRect(200, 0, 200, 150));
     comm_indicator_->show();
-
-    std::cout << "Comm Indicator Setup Finished" << std::endl;
 
 }
 
@@ -117,7 +106,7 @@ void HuboDashboardWidget::comm_indicator_update(std_msgs::Empty input){
 
 void HuboDashboardWidget::refreshCommIndicator(void){
 
-//    meter_id_++;
+//    meter_id_ ++;
 //    if (meter_id_ > 11) meter_id_ = 0;
 
     if (update_received_ == true) {
@@ -127,7 +116,6 @@ void HuboDashboardWidget::refreshCommIndicator(void){
 
     if (meter_id_ < 0) meter_id_ = 0;
     if (meter_id_ > 11) meter_id_ = 11;
-
 
     comm_indicator_->setPixmap(*meter_[meter_id_]);
 

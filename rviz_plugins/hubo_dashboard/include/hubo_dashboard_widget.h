@@ -51,6 +51,8 @@
 #include <QWidget>
 #include <QThread>
 #include <QLabel>
+#include <QImage>
+#include <resource_retriever/retriever.h>
 
 namespace DRC_Hubo_Interface
 {
@@ -122,6 +124,10 @@ protected:
   std::vector<QPixmap*> meter_;
   int meter_id_;
   bool update_received_;
+  resource_retriever::Retriever* r_;
+  resource_retriever::MemoryResource* mem_r_;
+  QImage* tempImage_;
+  QPixmap* tempPixmap_;
 
   //Subscriber for the comm indicator
   ros::Subscriber comm_indicator_update_;

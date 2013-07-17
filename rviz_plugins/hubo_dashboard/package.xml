@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <package>
+  <description>
+    RViz Plugin for monitoring the current state of Hubo
+  </description>
+
   <name>hubo_dashboard</name>
   <version>0.0.0</version>
-  <description> A RVIZ panel plugin that contains simple indications of the Hubo robot's health. May one day be split into unique plugins for use with different robots. </description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
+  <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="nick.alunni@gmail.com">Nicholas Alunni</maintainer>
@@ -44,13 +47,17 @@
   <build_depend>rospy</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rviz</build_depend>
+  <build_depend>resource_retriever</build_depend>
+
   <run_depend>rospy</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rviz</run_depend>
-
+  <run_depend>resource_retriever</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
-   <export>
+
+  <export>
     <rviz plugin="${prefix}/plugin_description.xml"/>
   </export>
+
 </package>

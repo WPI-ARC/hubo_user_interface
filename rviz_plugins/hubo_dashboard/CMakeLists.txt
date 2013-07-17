@@ -4,7 +4,7 @@ project(hubo_dashboard)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED )
+find_package(catkin REQUIRED resource_retriever)
 
 
 ## This plugin includes Qt widgets, so we must include Qt like so:
@@ -14,7 +14,7 @@ include(${QT_USE_FILE})
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS roscpp rospy
+    CATKIN_DEPENDS roscpp rospy resource_retriever
     DEPENDS QtCore QtGui )
 
 ## Here we specify which header files need to be run through "moc",
