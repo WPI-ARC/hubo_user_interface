@@ -4,23 +4,25 @@ project(hubo_sensor_control)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED )
+find_package(catkin REQUIRED teleop_msgs)
 
 
 ## This plugin includes Qt widgets, so we must include Qt like so:
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include(${QT_USE_FILE})
 
+
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS roscpp rospy
+    CATKIN_DEPENDS roscpp rospy teleop_msgs
     DEPENDS QtCore QtGui )
 
 ## Here we specify which header files need to be run through "moc",
 ## Qt's meta-object compiler.
 qt4_wrap_cpp(MOC_FILES
   include/hubo_sensor_control.h
+  include/hubo_defaults.h
 )
 
 ## Here we specify the list of source files, including the output of
@@ -36,6 +38,7 @@ set(SOURCE_FILES
   src/config_tab.cpp
   src/config_tab_slots.cpp
   include/hubo_sensor_control.h
+  include/hubo_defaults.h
   ${MOC_FILES}
 )
 

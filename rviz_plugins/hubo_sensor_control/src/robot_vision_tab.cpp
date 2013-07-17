@@ -50,6 +50,9 @@ namespace DRC_Hubo_Interface {
 
 void HuboSensorControlWidget::initializeRobotVisionFeedTab() {
 
+    cameraFeedHz = 0;
+    planarHz = 0;
+
     //======================================================
     //=====             Camera Feed Box                =====
     //======================================================  

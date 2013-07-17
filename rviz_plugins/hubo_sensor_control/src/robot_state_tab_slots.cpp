@@ -76,25 +76,29 @@ void HuboSensorControlWidget::handleStateApply(void){
 
     std::cout << "\n(Debug) Apply Pressed on Robot State Tab!" << std::endl;
 
-    std_srvs::Empty joint_srv;
-    std::cout << "(Debug) Calling /joint_state_topic/rate called with " << jointAnglesHz << " (Hz) ... ";
-    state_joints_client_.call(joint_srv);
-    std::cout << "Returned" << std::endl;
+    teleop_msgs::RateControl joint_srv;
+    joint_srv.request.Rate = jointAnglesHz;
+    std::cout << "(Debug) Calling " << HUBO_JOINT_STATES_SERVICE << " called with " << jointAnglesHz << " (Hz) ... ";
+    if (state_joints_client_.call(joint_srv)) std::cout << " Response = " << joint_srv.response.State << std::endl;
+    else std::cout << "FAILED" << std::endl;
 
-    std_srvs::Empty forces_srv;
-    std::cout << "(Debug) Calling /force_sensor_topic/rate called with " << forceSensorHz << " (Hz) ... ";
-    state_forces_client_.call(forces_srv);
-    std::cout << "Returned" << std::endl;
+    teleop_msgs::RateControl forces_srv;
+    forces_srv.request.Rate = forceSensorHz;
+    std::cout << "(Debug) Calling " << HUBO_FORCE_SENSOR_SERVICE << " called with " << forceSensorHz << " (Hz) ... ";
+    if (state_forces_client_.call(forces_srv)) std::cout << " Response = " << forces_srv.response.State  << std::endl;
+    else std::cout << "FAILED" << std::endl;
 
-    std_srvs::Empty accel_srv;
-    std::cout << "(Debug) Calling /accel_gryo_topic/rate called with " << accelGryoHz << " (Hz) ... ";
-    state_accel_client_.call(accel_srv);
-    std::cout << "Returned" << std::endl;
+    teleop_msgs::RateControl accel_srv;
+    accel_srv.request.Rate = accelGryoHz;
+    std::cout << "(Debug) Calling " << HUBO_ACCEL_GRYO_SERVICE << " called with " << accelGryoHz << " (Hz) ... ";
+    if (state_accel_client_.call(accel_srv)) std::cout << " Response = " << accel_srv.response.State  << std::endl;
+    else std::cout << "FAILED" << std::endl;
 
-    std_srvs::Empty touch_srv;
-    std::cout << "(Debug) Calling /touch_sensors_topic/rate called with " << touchSensorHz << " (Hz) ... ";
-    state_touch_client_.call(touch_srv);
-    std::cout << "Returned" << std::endl;
+    teleop_msgs::RateControl touch_srv;
+    touch_srv.request.Rate = touchSensorHz;
+    std::cout << "(Debug) Calling " << HUBO_TOUCH_SENSORS_SERVICE << " called with " << touchSensorHz << " (Hz) ... ";
+    if (state_touch_client_.call(touch_srv)) std::cout << " Response = " << touch_srv.response.State  << std::endl;
+    else std::cout << "FAILED" << std::endl;
 
     std::cout << "(Debug) All services have returned, continuing! \n" << std::endl;
 

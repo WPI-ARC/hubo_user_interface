@@ -40,13 +40,13 @@ HuboDashboardWidget::HuboDashboardWidget( QWidget* parent ) : QWidget( parent ) 
     comm_indicator_update_ = nh_.subscribe(topic.c_str(), 1, &HuboDashboardWidget::comm_indicator_update, this);
 
     //Setup the Joint Indicator
-    setupJointIndicator();
+//    setupJointIndicator();
 
     //Setup the Comm Indicator
     setupCommIndicator();
 
     //Setup the Battery Indicator
-    setupBatteryIndicator();
+//    setupBatteryIndicator();
 
     //Setup the refresh manager to run
     refreshManager = new HuboDashboardRefreshManager;

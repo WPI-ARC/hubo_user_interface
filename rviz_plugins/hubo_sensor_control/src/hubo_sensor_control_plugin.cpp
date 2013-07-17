@@ -93,25 +93,30 @@ HuboSensorControlWidget::HuboSensorControlWidget(QWidget *parent) : QTabWidget(p
                       "padding: 0 3px 0 3px;"
                       "}";
 
+    //Setup the service clients here
+    state_joints_client_ = nh_.serviceClient<teleop_msgs::RateControl>(HUBO_JOINT_STATES_SERVICE);
+    state_forces_client_ = nh_.serviceClient<teleop_msgs::RateControl>(HUBO_FORCE_SENSOR_SERVICE);
+    state_accel_client_ = nh_.serviceClient<teleop_msgs::RateControl>(HUBO_ACCEL_GRYO_SERVICE);
+    state_touch_client_ = nh_.serviceClient<teleop_msgs::RateControl>(HUBO_TOUCH_SENSORS_SERVICE);
+
     //The First tab controls data about the robots' state
     initializeRobotStateFeedTab();
-    std::cerr << "State Bandwidth Tab Loaded" << std::endl;
     addTab(robotStateFeedTab, "Hubo State");
+
+    //Setup the service clients here
+    vision_camera_client_ = nh_.serviceClient<teleop_msgs::RateControl>(HUBO_CAMERA_SERVICE);
+    vision_planar_client_ = nh_.serviceClient<teleop_msgs::RateControl>(HUBO_PLANAR_SERVICE);
 
     //The Second tab controls data about the robots' vision
     initializeRobotVisionFeedTab();
-    std::cerr << "Vision Bandwidth Tab Loaded" << std::endl;
     addTab(robotVisionFeedTab, "Hubo Vision");
 
     //The Second tab controls data about the robots' vision
 //    initializeSensorRequestTab();
-//    std::cerr << "Sensor Request Tab Loaded" << std::endl;
 //    addTab(sensorRequestTab, "Data Req.");
 
     //The Second tab controls data about the robots' vision
 //    initializeConfigTab();
-//    configTab = new QWidget;
-//    std::cerr << "Configuration Tab Loaded" << std::endl;
 //    addTab(configTab, "Config");
 
     refreshManager = new HuboSensorControlRefreshManager;
@@ -152,7 +157,6 @@ void HuboSensorControlRefreshManager::run()
 {
     alive = true;
     waitTime = 250;
-//    connect(this, SIGNAL(signalRefresh()), parentWidget, SLOT(RefreshComms()));
     while(alive)
     {
         emit signalRefresh();

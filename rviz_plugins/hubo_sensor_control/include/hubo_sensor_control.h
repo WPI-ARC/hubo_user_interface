@@ -45,6 +45,10 @@
 #ifndef HUBO_SENSOR_CONTROL_H_
 #define HUBO_SENSOR_CONTROL_H_
 
+//DRC Includes
+#include "hubo_defaults.h"
+#include "teleop_msgs/RateControl.h"
+
 //Ros Specific Includes
 #include <ros/ros.h>
 #include <rviz/panel.h>

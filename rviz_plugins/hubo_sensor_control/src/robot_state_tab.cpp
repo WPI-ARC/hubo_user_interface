@@ -51,11 +51,10 @@ namespace DRC_Hubo_Interface {
 void HuboSensorControlWidget::initializeRobotStateFeedTab()
 {
 
-    //Setup the service clients here
-    state_joints_client_ = nh_.serviceClient<std_srvs::Empty>("joint_state_topic/rate");
-    state_forces_client_ = nh_.serviceClient<std_srvs::Empty>("force_sensor_topic/rate");
-    state_accel_client_ = nh_.serviceClient<std_srvs::Empty>("accel_gyro_topic/rate");
-    state_touch_client_ = nh_.serviceClient<std_srvs::Empty>("touch_sensors_topic/rate");
+    jointAnglesHz = 0;
+    forceSensorHz = 0;
+    accelGryoHz = 0;
+    touchSensorHz = 0;
 
     //======================================================
     //===== Joint Angles Box                           =====

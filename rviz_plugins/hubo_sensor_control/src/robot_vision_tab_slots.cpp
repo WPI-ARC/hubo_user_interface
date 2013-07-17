@@ -65,17 +65,19 @@ void HuboSensorControlWidget::handleVisionApply(void){
 
     std::cout << "\n(Debug) Apply Pressed on Robot Vision Tab!" << std::endl;
 
-    std_srvs::Empty camera_srv;
-    std::cout << "(Debug) Calling /camera_topic/rate called with " << cameraFeedHz << " (Hz) ... ";
-    vision_camera_client_.call(camera_srv);
-    std::cout << "Returned" << std::endl;
+    teleop_msgs::RateControl camera_srv;
+    camera_srv.request.Rate = cameraFeedHz;
+    std::cout << "(Debug) Calling " << HUBO_CAMERA_SERVICE << " called with " << cameraFeedHz << " (Hz) ... ";
+    if (vision_camera_client_.call(camera_srv)) std::cout << " Response = " << camera_srv.response.State << std::endl;
+    else std::cout << "FAILED" << std::endl;
 
-    std_srvs::Empty planar_srv;
-    std::cout << "(Debug) Calling /planar_topic/rate called with " << planarHz << " (Hz) ... ";
-    vision_planar_client_.call(planar_srv);
-    std::cout << "Returned" << std::endl;
+    teleop_msgs::RateControl planar_srv;
+    planar_srv.request.Rate = planarHz;
+    std::cout << "(Debug) Calling " << HUBO_PLANAR_SERVICE << " called with " << planarHz << " (Hz) ... ";
+    if(vision_planar_client_.call(planar_srv)) std::cout << " Response = " << planar_srv.response.State << std::endl;
+    else std::cout << "FAILED" << std::endl;
 
-    std::cout << "All services have returned, continuing! \n" << std::endl;
+    std::cout << "(Debug) All services have returned, continuing! \n" << std::endl;
 
 }
 
