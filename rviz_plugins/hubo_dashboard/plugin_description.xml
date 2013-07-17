@@ -1,0 +1,9 @@
+<library path="lib/libhubo_dashboard">
+  <class name="DRC_Hubo_Interface/HuboDashboard"
+         type="DRC_Hubo_Interface::HuboDashboardPanel"
+         base_class_type="rviz::Panel">
+    <description>
+      A Panel that shows simple to understand information about Hubo's state.
+    </description>
+  </class>
+</library>
