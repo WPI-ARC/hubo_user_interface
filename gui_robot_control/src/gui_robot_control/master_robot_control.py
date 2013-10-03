@@ -69,8 +69,9 @@ class Control_Marker:
 
     def __init__(self):
 
-        global valve_localization_pub
+        global valve_localization_pub, robot_placement_pub
         valve_localization_pub = rospy.Publisher("valve_localization/show", Bool)
+        robot_placement_pub = rospy.Publisher("robot_placement/show", Bool)
         rospy.Subscriber("/rosout_agg", Log, self.monitorMsgsCB)
 
         #Setup The Valve and Valve Marker
@@ -135,15 +136,6 @@ class Control_Marker:
         elif self.menu.alignmentToolChecked == False:
             self.menu_handler.setCheckState(alignment_marker_tool, MenuHandler.UNCHECKED)
 
-        # Make the Gripper Teleop Tool
-        gripper_teleop_tool = self.menu_handler.insert("Gripper Teleop", \
-                                parent = tools_entry, \
-                                callback = self.gripperTeleopToolCB)
-        if self.menu.gripperTeleopChecked == True:
-            self.menu_handler.setCheckState(gripper_teleop_tool, MenuHandler.CHECKED)
-        elif self.menu.gripperTeleopChecked == False:
-            self.menu_handler.setCheckState(gripper_teleop_tool, MenuHandler.UNCHECKED)
-
         # Make the Placement Tool
         robot_placement_tool = self.menu_handler.insert("Robot Placement", \
                                 parent = tools_entry, \
@@ -152,6 +144,15 @@ class Control_Marker:
             self.menu_handler.setCheckState(robot_placement_tool, MenuHandler.CHECKED)
         elif self.menu.robotPlacementChecked == False:
             self.menu_handler.setCheckState(robot_placement_tool, MenuHandler.UNCHECKED)
+
+        # Make the Gripper Teleop Tool
+        gripper_teleop_tool = self.menu_handler.insert("Gripper Teleop", \
+                                parent = tools_entry, \
+                                callback = self.gripperTeleopToolCB)
+        if self.menu.gripperTeleopChecked == True:
+            self.menu_handler.setCheckState(gripper_teleop_tool, MenuHandler.CHECKED)
+        elif self.menu.gripperTeleopChecked == False:
+            self.menu_handler.setCheckState(gripper_teleop_tool, MenuHandler.UNCHECKED)
 
         #Make the Menu Entries for the Warnings, Errors, and Fatals
         warning_entry = self.menu_handler.insert("Warnings ("+ str(self.menu.numWarnings) + ")", callback = self.warningClear)
@@ -218,7 +219,22 @@ class Control_Marker:
 
 
     def robotPlacementCB(self, feedback):
-        rospy.logwarn("This doesn't exist yet!")
+        handle = feedback.menu_entry_id
+        state = self.menu_handler.getCheckState( handle )
+
+        if state == MenuHandler.CHECKED:
+            print "Turning Off Placement Tool"
+            self.menu_handler.setCheckState( handle, MenuHandler.UNCHECKED )
+            robot_placement_pub.publish(False)
+            self.menu.robotPlacementChecked = False
+        else:
+            print "Turning On Placement Tool"
+            self.menu_handler.setCheckState( handle, MenuHandler.CHECKED )
+            robot_placement_pub.publish(True)
+            self.menu.robotPlacementChecked = True
+
+        self.menu_handler.reApply( self.server )
+        self.server.applyChanges()
 
 
 
@@ -328,7 +344,7 @@ class Control_Marker:
             marker.color.g = 0.0
 
         marker.color.a = 1.0
-        marker.lifetime = rospy.Duration(0.5)
+        marker.lifetime = rospy.Duration(1)
         return marker
 
 
