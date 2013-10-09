@@ -75,6 +75,9 @@ class Control_Marker:
         self.pointcloud_request_client = None
         if (pointcloud_request_service != None):
             self.pointcloud_request_client = rospy.ServiceProxy(pointcloud_request_service, RateControl)
+        else:
+            print "WARNING - Pointcloud request is not enabled!"
+            
         rospy.Subscriber("/rosout_agg", Log, self.monitorMsgsCB)
 
         #Setup The Valve and Valve Marker
@@ -86,8 +89,9 @@ class Control_Marker:
         self.server = InteractiveMarkerServer("control_crystal")
 
         # Make sure pointcloud is request-only
-        req = RateControl()
+        req = RateControlRequest()
         req.Rate = 0.0
+        res = self.pointcloud_request_client.call(req)
         try:
             res = self.pointcloud_request_client.call(req)
             print "Switched pointcloud transport to request-only mode"
@@ -198,7 +202,7 @@ class Control_Marker:
 
     def pointCloudCB(self, feedback):
         # Make sure pointcloud is request-only
-        req = RateControl()
+        req = RateControlRequest()
         req.Rate = -1.0
         try:
             res = self.pointcloud_request_client.call(req)
@@ -369,6 +373,7 @@ class Control_Marker:
 if __name__ == '__main__':
     rospy.init_node("control_crystal")
     pointcloud_request = rospy.get_param("~pointcloud_request_service", "")
+    print "Pointcloud request service: " + pointcloud_request
     if (pointcloud_request == ""):
         pointcloud_request = None
     Control_Marker(pointcloud_request)
