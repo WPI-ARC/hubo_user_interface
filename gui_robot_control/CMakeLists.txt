@@ -4,7 +4,7 @@ project(gui_robot_control)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp rospy sensor_msgs std_msgs rosgraph_msgs)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp rospy sensor_msgs std_msgs rosgraph_msgs teleop_msgs message_generation)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -34,13 +34,13 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  geometry_msgs
-  sensor_msgs
-  std_msgs
-  rosgraph_msgs
-)
+#generate_messages(
+#  DEPENDENCIES
+#  geometry_msgs
+#  sensor_msgs
+#  std_msgs
+#  rosgraph_msgs
+#)
 
 ###################################
 ## catkin specific configuration ##
@@ -53,7 +53,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES valve_localization
-  CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime rosgraph_msgs
+  CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime rosgraph_msgs teleop_msgs
   DEPENDS system_lib
 )
 
@@ -95,6 +95,7 @@ include_directories(include
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
   src/gui_robot_control/master_robot_control.py
+  src/gui_robot_control/control_crystal.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
