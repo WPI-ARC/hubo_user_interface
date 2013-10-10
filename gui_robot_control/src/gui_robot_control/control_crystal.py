@@ -94,7 +94,6 @@ class Control_Marker:
         # Make sure pointcloud is request-only
         req = RateControlRequest()
         req.Rate = 0.0
-        res = self.pointcloud_request_client.call(req)
         try:
             res = self.pointcloud_request_client.call(req)
             print "Switched pointcloud transport to request-only mode"
