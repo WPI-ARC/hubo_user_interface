@@ -1,0 +1,6 @@
+Changes from 2013-10-07 to 2013-10-14
+    The control crystal now correctly spawns over the robots head
+    Size reduced to be a more managable appearance
+    Flashes once when a warning is received. If a new warning is received during that flash, will not flash again.
+    Auto-achnowledges warnings after a single flash. This is due to the number of warnings generated during operation.
+    Correctly requests a point cloud from the menu

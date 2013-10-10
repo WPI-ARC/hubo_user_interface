@@ -38,9 +38,9 @@ class MarkerStatus:
         self.radius = self.default_radius
         self.default_pose_stamped = PoseStamped()
         self.default_pose_stamped.header.frame_id = "/Body_TSY"
-        self.default_pose_stamped.pose.position.x = 1.0
+        self.default_pose_stamped.pose.position.x = 0.0
         self.default_pose_stamped.pose.position.y = 0.0
-        self.default_pose_stamped.pose.position.z = 0.0
+        self.default_pose_stamped.pose.position.z = .75
         self.default_pose_stamped.pose.orientation.x = 0.0
         self.default_pose_stamped.pose.orientation.y = 0.0
         self.default_pose_stamped.pose.orientation.z = 0.0
@@ -55,6 +55,9 @@ class MarkerStatus:
 class MenuStatus:
 
     def __init__(self):
+        self.flash = 0
+        self.warningFlash = 0
+        self.warningState = False
         self.numWarnings = 0
         self.numErrors = 0
         self.numFatal = 0
@@ -107,6 +110,20 @@ class Control_Marker:
         #for marker_name in self.server.marker_contexts.keys():
         #    self.server.erase(marker_name)
         self.server.clear()
+
+
+        if self.menu.numWarnings > 0:
+            if self.menu.warningState == False:
+                self.menu.warningState = True
+
+            if self.menu.warningState == True:
+                self.menu.flash += 1
+
+            if self.menu.flash >= 60:
+                self.menu.flash = 0
+                self.menu.warningState = False
+                self.menu.numWarnings = 0
+                self.populate_menu()
 
         self.status.rotate += 1
         if self.status.rotate > 60:
@@ -324,7 +341,7 @@ class Control_Marker:
         marker.mesh_resource = "package://gui_robot_control/meshes/SimsIcon.dae"
 
         pose_offset = Pose()
-        pose_offset.position.z = 2
+        pose_offset.position.z = 0
         q1 = quaternion_about_axis((2*math.pi / 60) * self.status.rotate, (0,0,1))
         pose_offset.orientation.x = q1[0]
         pose_offset.orientation.y = q1[1]
@@ -335,18 +352,25 @@ class Control_Marker:
         marker.pose = rotated_pose
 
         #Set the scale of the marker -- 1x1x1 here means 1m on a side
-        marker.scale.x = .5
-        marker.scale.y = .5
-        marker.scale.z = .5
+        marker.scale.x = .2
+        marker.scale.y = .2
+        marker.scale.z = .2
 
         #Set the color -- be sure to set alpha to something non-zero!
+
+
+        if self.menu.flash > 30:
+            diff = 60 - self.menu.flash
+            red = 0.7 * (diff / 30.0)
+        else:
+            red = 0.7 * (self.menu.flash / 30.0)
 
         marker.color.r = 0.0
         marker.color.b = 0.0
         marker.color.g = 0.7
 
         if self.menu.numWarnings != 0:
-            marker.color.r = .7
+            marker.color.r = red
             marker.color.b = 0.0
             marker.color.g = .7
         if self.menu.numErrors != 0:
