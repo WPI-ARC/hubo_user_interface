@@ -70,7 +70,7 @@ class MenuStatus:
 
 class Control_Marker:
 
-    def __init__(self, pointcloud_request_service):
+    def __init__(self, pointcloud_request_service, laser_request_service):
 
         global valve_localization_pub, robot_placement_pub
         valve_localization_pub = rospy.Publisher("valve_localization/show", Bool)
@@ -79,7 +79,13 @@ class Control_Marker:
         if (pointcloud_request_service != None):
             self.pointcloud_request_client = rospy.ServiceProxy(pointcloud_request_service, RateControl)
         else:
-            print "WARNING - Pointcloud request is not enabled!"
+            print "WARNING - RGBD Pointcloud request is not enabled!"
+
+        self.laser_request_client = None
+        if (laser_request_service != None):
+            self.laser_request_client = rospy.ServiceProxy(laser_request_service, RateControl)
+        else:
+            print "WARNING - LIDAR Pointcloud request is not enabled!"
             
         rospy.Subscriber("/rosout_agg", Log, self.monitorMsgsCB)
 
@@ -96,9 +102,18 @@ class Control_Marker:
         req.Rate = 0.0
         try:
             res = self.pointcloud_request_client.call(req)
-            print "Switched pointcloud transport to request-only mode"
+            print "Switched RGBD pointcloud transport to request-only mode"
         except:
-            print "Service call failed - is pointcloud transport running?"
+            print "Service call failed - is RGBD pointcloud transport running?"
+
+        # Make sure pointcloud is request-only
+        req = RateControlRequest()
+        req.Rate = 0.0
+        try:
+            res = self.laser_request_client.call(req)
+            print "Switched LIDAR pointcloud transport to request-only mode"
+        except:
+            print "Service call failed - is LIDAR pointcloud transport running?"
 
         # Setup the Refresh Rate of the Marker
         rate = rospy.Rate(20.0)
@@ -154,7 +169,9 @@ class Control_Marker:
 
         self.menu_handler = MenuHandler()
 
-        self.menu_handler.insert("Request Cloud", callback = self.pointCloudCB)
+        self.menu_handler.insert("Request RGBD Cloud", callback = self.pointCloudRGBDCB)
+
+        self.menu_handler.insert("Request LIDAR Cloud", callback = self.pointCloudLIDARCB)
 
         tools_entry = self.menu_handler.insert("Tools")
 
@@ -216,15 +233,26 @@ class Control_Marker:
 
 
 
-    def pointCloudCB(self, feedback):
+    def pointCloudRGBDCB(self, feedback):
         # Make sure pointcloud is request-only
         req = RateControlRequest()
         req.Rate = -1.0
         try:
             res = self.pointcloud_request_client.call(req)
-            print "Requested a single pointcloud"
+            print "Requested a single RGBD pointcloud"
         except:
-            print "Request pointcloud call failed - is pointcloud transport running?"
+            print "Request pointcloud call failed - is RGBD pointcloud transport running?"
+
+    def pointCloudLIDARCB(self, feedback):
+        # Make sure pointcloud is request-only
+        req = RateControlRequest()
+        req.Rate = -1.0
+        try:
+            res = self.laser_request_client.call(req)
+            print "Requested a single LIDAR pointcloud"
+        except:
+            print "Request pointcloud call failed - is LIDAR pointcloud transport running?"
+
 
 
 
@@ -395,8 +423,14 @@ class Control_Marker:
 
 if __name__ == '__main__':
     rospy.init_node("control_crystal")
-    pointcloud_request = rospy.get_param("~pointcloud_request_service", "")
+    pointcloud_request = rospy.get_param("~rgbd_pointcloud_request_service", "")
     print "Pointcloud request service: " + pointcloud_request
     if (pointcloud_request == ""):
         pointcloud_request = None
-    Control_Marker(pointcloud_request)
+
+    laser_request = rospy.get_param("~lidar_pointcloud_request_service", "")
+    print "Pointcloud request service: " + laser_request
+    if (laser_request == ""):
+        laser_request = None
+
+    Control_Marker(pointcloud_request, laser_request)

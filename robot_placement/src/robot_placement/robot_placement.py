@@ -40,7 +40,7 @@ class MarkerStatus:
         self.default_pose_stamped.header.frame_id = "/Body_TSY"
         self.default_pose_stamped.pose.position.x = 1.0
         self.default_pose_stamped.pose.position.y = 0.0
-        self.default_pose_stamped.pose.position.z = 0.0
+        self.default_pose_stamped.pose.position.z = -0.95
         self.default_pose_stamped.pose.orientation.x = 0.0
         self.default_pose_stamped.pose.orientation.y = 0.0
         self.default_pose_stamped.pose.orientation.z = 0.0
@@ -139,8 +139,8 @@ class Placement_Marker:
         new_marker.name = 'placement_marker'
 
 
-        display_marker_left = self.make_valve_marker(marker_pose, -.2)
-        display_marker_right = self.make_valve_marker(marker_pose, +.2)
+        display_marker_left = self.make_valve_marker(marker_pose, -.1)
+        display_marker_right = self.make_valve_marker(marker_pose, +.1)
 
         # Make the menu control
         new_control = InteractiveMarkerControl()
@@ -208,9 +208,9 @@ class Placement_Marker:
         marker.pose = rotated_pose
 
         #Set the scale of the marker -- 1x1x1 here means 1m on a side
-        marker.scale.x = .25
-        marker.scale.y = .20
-        marker.scale.z = .05
+        marker.scale.x = .15
+        marker.scale.y = .1
+        marker.scale.z = .02
 
         #Set the color -- be sure to set alpha to something non-zero!
 
