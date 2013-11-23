@@ -70,23 +70,27 @@ class MenuStatus:
 
 class Control_Marker:
 
-    def __init__(self, pointcloud_request_service, laser_request_service):
-
-        global valve_localization_pub, robot_placement_pub
-        valve_localization_pub = rospy.Publisher("valve_localization/show", Bool)
-        robot_placement_pub = rospy.Publisher("robot_placement/show", Bool)
+    def __init__(self, pointcloud_request_service, laser_request_service, head_control_action):
+        self.current_tilt = 0.0
+        self.current_pan = 0.0
+        self.valve_localization_pub = rospy.Publisher("valve_localization/show", Bool)
+        self.robot_placement_pub = rospy.Publisher("robot_placement/show", Bool)
         self.pointcloud_request_client = None
         if (pointcloud_request_service != None):
             self.pointcloud_request_client = rospy.ServiceProxy(pointcloud_request_service, RateControl)
         else:
-            print "WARNING - RGBD Pointcloud request is not enabled!"
-
+            rospy.logwarn("RGBD Pointcloud request is not enabled!")
         self.laser_request_client = None
         if (laser_request_service != None):
             self.laser_request_client = rospy.ServiceProxy(laser_request_service, RateControl)
         else:
-            print "WARNING - LIDAR Pointcloud request is not enabled!"
-            
+            rospy.logwarn("LIDAR Pointcloud request is not enabled!")
+        self.head_client = None
+        if (head_control_action != None):
+            self.head_client = actionlib.SimpleActionClient(head_control_action, hrms.PointHeadAction)
+        else:
+            rospy.logwarn("Head pointing disabled")
+
         rospy.Subscriber("/rosout_agg", Log, self.monitorMsgsCB)
 
         #Setup The Valve and Valve Marker
@@ -114,6 +118,19 @@ class Control_Marker:
             print "Switched LIDAR pointcloud transport to request-only mode"
         except:
             print "Service call failed - is LIDAR pointcloud transport running?"
+
+        # Make sure the head is pointing forwards
+        head_goal = hrms.PointHeadGoal()
+        head_goal.target_type = head_goal.ANGLETARGET
+        head_goal.pan_angle = self.current_pan
+        head_goal.tilt_angle = self.current_tilt
+        head_goal.min_duration = rospy.Duration(5.0)
+        try:
+            self.head_client.send_goal(head_goal)
+            self.head_client.wait_for_result(rospy.Duration(5.0))
+            print "Ensured head is at the zero position"
+        except:
+            print "PointHeadAction call failed - is the head control running?"
 
         # Setup the Refresh Rate of the Marker
         rate = rospy.Rate(20.0)
@@ -168,10 +185,13 @@ class Control_Marker:
                errors_entry, fatal_entry, fatal_t, warning_t, error_t
 
         self.menu_handler = MenuHandler()
-
         self.menu_handler.insert("Request RGBD Cloud", callback = self.pointCloudRGBDCB)
-
         self.menu_handler.insert("Request LIDAR Cloud", callback = self.pointCloudLIDARCB)
+
+        self.menu_handler.insert("Tilt head UP 10 DEGREES", callback = self.tiltHeadUpCB)
+        self.menu_handler.insert("Tilt head DOWN 10 DEGREES", callback = self.tiltHeadDownCB)
+        self.menu_handler.insert("Pan head LEFT 10 DEGREES", callback = self.panHeadLeftCB)
+        self.menu_handler.insert("Pan head RIGHT 10 DEGREES", callback = self.panHeadRightCB)
 
         tools_entry = self.menu_handler.insert("Tools")
 
@@ -255,6 +275,52 @@ class Control_Marker:
 
 
 
+    def tiltHeadUpCB(self, feedback):
+        current_tilt = self.current_tilt
+        new_tilt = current_tilt - (math.pi / 18.0)
+        rospy.loginfo("Tilting the head right from " + str(current_tilt) + " to " + str(new_tilt))
+        self.controlHead(self.current_pan, new_tilt)
+        rospy.loginfo("Head tilting complete")
+        pass
+
+    def tiltHeadDownCB(self, feedback):
+        current_tilt = self.current_tilt
+        new_tilt = current_tilt + (math.pi / 18.0)
+        rospy.loginfo("Tilting the head right from " + str(current_tilt) + " to " + str(new_tilt))
+        self.controlHead(self.current_pan, new_tilt)
+        rospy.loginfo("Head tilting complete")
+        pass
+
+    def panHeadLeftCB(self, feedback):
+        current_pan = self.current_pan
+        new_pan = current_pan + (math.pi / 18.0)
+        rospy.loginfo("Panning the head right from " + str(current_pan) + " to " + str(new_pan))
+        self.controlHead(new_pan, self.current_tilt)
+        rospy.loginfo("Head panning complete")
+        pass
+
+    def panHeadRightCB(self, feedback):
+        current_pan = self.current_pan
+        new_pan = current_pan - (math.pi / 18.0)
+        rospy.loginfo("Panning the head right from " + str(current_pan) + " to " + str(new_pan))
+        self.controlHead(new_pan, self.current_tilt)
+        rospy.loginfo("Head panning complete")
+        pass
+
+    def controlHead(self, pan, tilt):
+        # Make sure the head is pointing forwards
+        head_goal = hrms.PointHeadGoal()
+        head_goal.target_type = head_goal.ANGLETARGET
+        head_goal.pan_angle = pan
+        head_goal.tilt_angle = tilt
+        head_goal.min_duration = rospy.Duration(1.0)
+        try:
+            self.head_client.send_goal(head_goal)
+            self.head_client.wait_for_result(rospy.Duration(1.0))
+            print "Head pointing completed"
+        except:
+            print "PointHeadAction call failed - is the head control running?"
+
 
     def alignmentToolCB(self, feedback):
         handle = feedback.menu_entry_id
@@ -263,12 +329,12 @@ class Control_Marker:
         if state == MenuHandler.CHECKED:
             print "Turning Off Alignment Tool"
             self.menu_handler.setCheckState( handle, MenuHandler.UNCHECKED )
-            valve_localization_pub.publish(False)
+            self.valve_localization_pub.publish(False)
             self.menu.alignmentToolChecked = False
         else:
             print "Turning On Alignment Tool"
             self.menu_handler.setCheckState( handle, MenuHandler.CHECKED )
-            valve_localization_pub.publish(True)
+            self.valve_localization_pub.publish(True)
             self.menu.alignmentToolChecked = True
 
         self.menu_handler.reApply( self.server )
@@ -288,12 +354,12 @@ class Control_Marker:
         if state == MenuHandler.CHECKED:
             print "Turning Off Placement Tool"
             self.menu_handler.setCheckState( handle, MenuHandler.UNCHECKED )
-            robot_placement_pub.publish(False)
+            self.robot_placement_pub.publish(False)
             self.menu.robotPlacementChecked = False
         else:
             print "Turning On Placement Tool"
             self.menu_handler.setCheckState( handle, MenuHandler.CHECKED )
-            robot_placement_pub.publish(True)
+            self.robot_placement_pub.publish(True)
             self.menu.robotPlacementChecked = True
 
         self.menu_handler.reApply( self.server )
@@ -433,4 +499,9 @@ if __name__ == '__main__':
     if (laser_request == ""):
         laser_request = None
 
-    Control_Marker(pointcloud_request, laser_request)
+    head_control_action = rospy.get_param("~head_pointing_action", "")
+    print "Head pointing action: " + head_control_action
+    if (head_control_action == ""):
+        head_control_action = None
+
+    Control_Marker(pointcloud_request, laser_request, head_control_action)
