@@ -279,34 +279,30 @@ class Control_Marker:
     def tiltHeadUpCB(self, feedback):
         current_tilt = self.current_tilt
         new_tilt = current_tilt - (math.pi / 18.0)
-        rospy.loginfo("Tilting the head right from " + str(current_tilt) + " to " + str(new_tilt))
+        rospy.loginfo("Tilting the head UP from " + str(current_tilt) + " to " + str(new_tilt))
         self.controlHead(self.current_pan, new_tilt)
         rospy.loginfo("Head tilting complete")
-        pass
 
     def tiltHeadDownCB(self, feedback):
         current_tilt = self.current_tilt
         new_tilt = current_tilt + (math.pi / 18.0)
-        rospy.loginfo("Tilting the head right from " + str(current_tilt) + " to " + str(new_tilt))
+        rospy.loginfo("Tilting the head DOWN from " + str(current_tilt) + " to " + str(new_tilt))
         self.controlHead(self.current_pan, new_tilt)
         rospy.loginfo("Head tilting complete")
-        pass
 
     def panHeadLeftCB(self, feedback):
         current_pan = self.current_pan
         new_pan = current_pan + (math.pi / 18.0)
-        rospy.loginfo("Panning the head right from " + str(current_pan) + " to " + str(new_pan))
+        rospy.loginfo("Panning the head LEFT from " + str(current_pan) + " to " + str(new_pan))
         self.controlHead(new_pan, self.current_tilt)
         rospy.loginfo("Head panning complete")
-        pass
 
     def panHeadRightCB(self, feedback):
         current_pan = self.current_pan
         new_pan = current_pan - (math.pi / 18.0)
-        rospy.loginfo("Panning the head right from " + str(current_pan) + " to " + str(new_pan))
+        rospy.loginfo("Panning the head RIGHT from " + str(current_pan) + " to " + str(new_pan))
         self.controlHead(new_pan, self.current_tilt)
         rospy.loginfo("Head panning complete")
-        pass
 
     def controlHead(self, pan, tilt):
         # Make sure the head is pointing forwards
@@ -318,9 +314,11 @@ class Control_Marker:
         try:
             self.head_client.send_goal(head_goal)
             self.head_client.wait_for_result(rospy.Duration(1.0))
-            print "Head pointing completed"
+            rospy.loginfo("Head pointing completed")
+            self.current_tilt = tilt
+            self.current_pan = pan
         except:
-            print "PointHeadAction call failed - is the head control running?"
+            rospy.logwarn("PointHeadAction call failed - is the head control running?")
 
 
     def alignmentToolCB(self, feedback):
@@ -491,12 +489,12 @@ class Control_Marker:
 if __name__ == '__main__':
     rospy.init_node("control_crystal")
     pointcloud_request = rospy.get_param("~rgbd_pointcloud_request_service", "")
-    print "Pointcloud request service: " + pointcloud_request
+    print "RGBD Pointcloud request service: " + pointcloud_request
     if (pointcloud_request == ""):
         pointcloud_request = None
 
     laser_request = rospy.get_param("~lidar_pointcloud_request_service", "")
-    print "Pointcloud request service: " + laser_request
+    print "LIDAR Pointcloud request service: " + laser_request
     if (laser_request == ""):
         laser_request = None
 
